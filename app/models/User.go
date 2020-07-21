@@ -96,3 +96,14 @@ func (user *User) GetUser(db *gorm.DB) (*User, error) {
 	}
 	return account, nil
 }
+
+// GetUsers return all users
+func (user *User) GetUsers(db *gorm.DB) (*[]User, error) {
+	users := []User{}
+
+	if err := db.Debug().Table("users").Find(&users).Error; err != nil {
+		return &[]User{}, err
+	}
+
+	return &users, nil
+}

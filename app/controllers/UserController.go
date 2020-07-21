@@ -110,3 +110,19 @@ func (app *App) Login(w http.ResponseWriter, r *http.Request) {
 	response["token"] = token
 	helpers.JSON(w, http.StatusOK, response)
 }
+
+// GetAllUsers getting all users
+func (app *App) GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	response := map[string]interface{}{"status": "success", "message": "Users List"}
+
+	user := &models.User{}
+
+	users, err :=  user.GetUsers(app.DB)
+	if err != nil {
+		helpers.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	response["data"] = users
+	helpers.JSON(w, http.StatusOK, response)
+}

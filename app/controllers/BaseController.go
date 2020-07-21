@@ -24,6 +24,13 @@ func (app *App) Routes() {
 
 	app.Router.HandleFunc("/api/register", app.Register).Methods("POST")
 	app.Router.HandleFunc("/api/login", app.Login).Methods("POST")
+
+	// Require auth
+	ProtectedRoute := app.Router.PathPrefix("/protected").Subrouter()
+	ProtectedRoute.Use(middlewares.AuthJwtVerify)
+
+	ProtectedRoute.HandleFunc("/api/users", app.GetAllUsers).Methods("GET")
+	ProtectedRoute.HandleFunc("/api/articles", app.CreateArticle).Methods("POST")
 }
 
 // Init the App
@@ -40,7 +47,7 @@ func (app *App) Init(DBHost, DBPort, DBUser, DBName, DBPassword string) {
 
 	fmt.Println("Connected to database")
 
-	app.DB.Debug().AutoMigrate(&models.User{})
+	app.DB.Debug().AutoMigrate(&models.User{}, &models.Article{})
 	app.Routes()
 }
 
