@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
 	"starter/app/helpers"
@@ -42,6 +43,15 @@ func (app *App) CreateArticle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response["data"] = articleData
-	helpers.JSON(w, http.StatusCreated, response)
+	helpers.JSON(w,	 http.StatusCreated, response)
 	return
+}
+
+func (app *App) DeleteArticle(w http.ResponseWriter, r *http.Request) {
+	response := map[string]interface{}{"Status": "success", "Message": "Article Deleted"}
+	article := &models.Article{}
+	id := mux.Vars(r)["id"]
+
+	article.DeleteArticle(id, app.DB)
+	helpers.JSON(w, http.StatusOK, response)
 }

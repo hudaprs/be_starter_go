@@ -8,10 +8,10 @@ import (
 
 type Article struct {
 	gorm.Model
-	Title string `gorm:"size:100;not null"`
-	Body string `gorm:"size:100;not null"`
-	CreatedBy User `gorm:"foreignKey:UserID;" `
-	UserID uint `gorm:"not null"`
+	Title     string `gorm:"size:100;not null"`
+	Body      string `gorm:"size:100;not null"`
+	CreatedBy User   `gorm:"foreignKey:UserID;" json:"-"`
+	UserID    uint   `gorm:"not null"`
 }
 
 func (article *Article) Prepare() {
@@ -20,7 +20,7 @@ func (article *Article) Prepare() {
 	article.CreatedBy = User{}
 }
 
-func  (article *Article) Validate() error {
+func (article *Article) Validate() error {
 	if article.Title == "" {
 		return errors.New("Title is required")
 	}
@@ -65,7 +65,7 @@ func (article *Article) GetArticles(db *gorm.DB) (*[]Article, error) {
 func (article *Article) UpdateArticle(id int, db *gorm.DB) (*Article, error) {
 	if err := db.Debug().Table("articles").Where("id = ? ", id).Updates(Article{
 		Title: article.Title,
-		Body: article.Body,
+		Body:  article.Body,
 	}).Error; err != nil {
 		return &Article{}, err
 	}
@@ -73,6 +73,13 @@ func (article *Article) UpdateArticle(id int, db *gorm.DB) (*Article, error) {
 	return article, nil
 }
 
-func DeleteArticle(id int, db *gorm.DB) {
-	db.Debug().Table("articles").Where("id = ?", id).Unscoped().Delete(&Article{})
+func (article *Article) DeleteArticle(id string, db *gorm.DB) (*Article, error) {
+	var err error
+	// Debug article and show detailed log operation
+	err = db.Debug().Table("articles").Where("id = ?", id).Unscoped().Delete(&article).Error
+	if err != nil {
+		return &Article{}, err
+	}
+
+	return article, nil
 }

@@ -31,6 +31,7 @@ func (app *App) Routes() {
 
 	ProtectedRoute.HandleFunc("/api/users", app.GetAllUsers).Methods("GET")
 	ProtectedRoute.HandleFunc("/api/articles", app.CreateArticle).Methods("POST")
+	ProtectedRoute.HandleFunc("/api/articles/{id}", app.DeleteArticle).Methods("DELETE")
 }
 
 // Init the App
